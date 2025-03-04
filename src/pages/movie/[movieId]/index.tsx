@@ -10,11 +10,13 @@ const MoviePage: NextPage<MoviePageProps> = ({ movie }) => {
   return <MovieDetails movie={movie} />;
 };
 
+const API_BASE = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export const getServerSideProps: GetServerSideProps<MoviePageProps> = async (
   ctx
 ) => {
   const res = await fetch(
-    `http://localhost:${process.env.PORT || 5055}/api/v1/movie/${
+    `http://localhost:${process.env.PORT || 5055}${API_BASE}/api/v1/movie/${
       ctx.query.movieId
     }`,
     {
