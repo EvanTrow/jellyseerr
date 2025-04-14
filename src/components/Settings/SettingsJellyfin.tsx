@@ -65,6 +65,13 @@ const messages = defineMessages('components.Settings', {
   tip: 'Tip',
   scanbackground:
     'Scanning will run in the background. You can continue the setup process in the meantime.',
+  discordAuthSettings: 'Discord Sign-In',
+  discordSigninSettingsDescription:
+    'Optionally configure the ability for users to sign-in with Discord. You must have the Discord-Auth plugin installed and configured on the Jellyfin server.',
+  enableDiscordAuth: 'Enable Discord Sign-In',
+  discordClientId: 'Discord Client ID',
+  discordClientSecret: 'Discord Client Secret',
+  discordRedirectUrl: 'Redirect URL',
 });
 
 interface Library {
@@ -487,6 +494,10 @@ const SettingsJellyfin: React.FC<SettingsJellyfinProps> = ({
           jellyfinExternalUrl: data?.externalHostname || '',
           jellyfinForgotPasswordUrl: data?.jellyfinForgotPasswordUrl || '',
           apiKey: data?.apiKey,
+          enableDiscordAuth: data?.enableDiscordAuth,
+          discordClientId: data?.discordClientId || '',
+          discordClientSecret: data?.discordClientSecret || '',
+          discordRedirectUrl: `${window.location.origin}/login`,
         }}
         validationSchema={JellyfinSettingsSchema}
         onSubmit={async (values) => {
@@ -504,6 +515,10 @@ const SettingsJellyfin: React.FC<SettingsJellyfinProps> = ({
                 externalHostname: values.jellyfinExternalUrl,
                 jellyfinForgotPasswordUrl: values.jellyfinForgotPasswordUrl,
                 apiKey: values.apiKey,
+                enableDiscordAuth: values.enableDiscordAuth,
+                discordClientId: values.discordClientId,
+                discordClientSecret: values.discordClientSecret,
+                discordRedirectUrl: values.discordRedirectUrl,
               } as JellyfinSettings),
             });
             if (!res.ok) throw new Error(res.statusText, { cause: res });
@@ -716,6 +731,88 @@ const SettingsJellyfin: React.FC<SettingsJellyfinProps> = ({
                     )}
                 </div>
               </div>
+
+              <div className="mt-10 mb-6">
+                <h3 className="heading">
+                  {intl.formatMessage(messages.discordAuthSettings)}
+                </h3>
+                <p className="description">
+                  {intl.formatMessage(
+                    messages.discordSigninSettingsDescription
+                  )}
+                </p>
+              </div>
+
+              <div className="form-row">
+                <label htmlFor="enableDiscordAuth" className="checkbox-label">
+                  {intl.formatMessage(messages.enableDiscordAuth)}
+                </label>
+                <div className="form-input-area">
+                  <Field
+                    type="checkbox"
+                    id="enableDiscordAuth"
+                    name="enableDiscordAuth"
+                    onChange={() => {
+                      setFieldValue(
+                        'enableDiscordAuth',
+                        !values.enableDiscordAuth
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+              {values.enableDiscordAuth && (
+                <>
+                  <div className="form-row">
+                    <label htmlFor="discordClientId" className="text-label">
+                      {intl.formatMessage(messages.discordClientId)}
+                    </label>
+                    <div className="form-input-area">
+                      <div className="form-input-field">
+                        <Field
+                          type="text"
+                          inputMode="url"
+                          id="discordClientId"
+                          name="discordClientId"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <label htmlFor="discordClientSecret" className="text-label">
+                      {intl.formatMessage(messages.discordClientSecret)}
+                    </label>
+                    <div className="form-input-area">
+                      <div className="form-input-field">
+                        <SensitiveInput
+                          as="field"
+                          type="text"
+                          inputMode="url"
+                          id="discordClientSecret"
+                          name="discordClientSecret"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <label htmlFor="discordRedirectUrl" className="text-label">
+                      {intl.formatMessage(messages.discordRedirectUrl)}
+                    </label>
+                    <div className="form-input-area">
+                      <div className="form-input-field">
+                        <Field
+                          type="text"
+                          inputMode="url"
+                          id="discordRedirectUrl"
+                          name="discordRedirectUrl"
+                          disabled
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
               <div
                 className={`actions ${isSetupSettings ? 'mt-0 border-0' : ''}`}
               >

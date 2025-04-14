@@ -48,6 +48,10 @@ export interface JellyfinSettings {
   libraries: Library[];
   serverId: string;
   apiKey: string;
+  enableDiscordAuth: boolean;
+  discordClientId?: string;
+  discordClientSecret?: string;
+  discordRedirectUrl?: string;
 }
 export interface TautulliSettings {
   hostname?: string;
@@ -160,6 +164,8 @@ interface FullPublicSettings extends PublicSettings {
   jellyfinExternalHost?: string;
   jellyfinForgotPasswordUrl?: string;
   jellyfinServerName?: string;
+  enableDiscordAuth?: boolean;
+  discordClientId?: string;
   partialRequestsEnabled: boolean;
   enableSpecialEpisodes: boolean;
   cacheImages: boolean;
@@ -372,6 +378,10 @@ class Settings {
         libraries: [],
         serverId: '',
         apiKey: '',
+        enableDiscordAuth: false,
+        discordClientId: '',
+        discordClientSecret: '',
+        discordRedirectUrl: '',
       },
       tautulli: {},
       radarr: [],
@@ -592,6 +602,8 @@ class Settings {
       mediaServerLogin: this.data.main.mediaServerLogin,
       jellyfinExternalHost: this.data.jellyfin.externalHostname,
       jellyfinForgotPasswordUrl: this.data.jellyfin.jellyfinForgotPasswordUrl,
+      enableDiscordAuth: this.data.jellyfin.enableDiscordAuth,
+      discordClientId: this.data.jellyfin.discordClientId,
       movie4kEnabled: this.data.radarr.some(
         (radarr) => radarr.is4k && radarr.isDefault
       ),

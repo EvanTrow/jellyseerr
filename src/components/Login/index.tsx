@@ -1,3 +1,4 @@
+import DiscordLogo from '@app/assets/services/discord.svg';
 import EmbyLogo from '@app/assets/services/emby-icon-only.svg';
 import JellyfinLogo from '@app/assets/services/jellyfin-icon.svg';
 import PlexLogo from '@app/assets/services/plex.svg';
@@ -18,6 +19,7 @@ import { useRouter } from 'next/dist/client/router';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
+import { useToasts } from 'react-toast-notifications';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import useSWR from 'swr';
 
@@ -31,6 +33,7 @@ const messages = defineMessages('components.Login', {
 });
 
 const Login = () => {
+  const toasts = useToasts();
   const intl = useIntl();
   const router = useRouter();
   const settings = useSettings();
@@ -80,6 +83,49 @@ const Login = () => {
       login();
     }
   }, [authToken, revalidate]);
+
+  // Check for URL parameters `code` and `state` for OAuth login
+  useEffect(() => {
+    const { code, state } = router.query;
+
+    if (code && state) {
+      if (state === 'discord') {
+        const loginWithDiscord = async () => {
+          setProcessing(true);
+          try {
+            const res = await fetch('/api/v1/auth/discord', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ code }),
+            });
+            if (!res.ok) throw new Error(res.statusText, { cause: res });
+            const data = await res.json();
+
+            if (data?.id) {
+              revalidate();
+            }
+          } catch (e) {
+            let errorData;
+            try {
+              errorData = await e.cause?.text();
+              errorData = JSON.parse(errorData);
+            } catch {
+              /* empty */
+            }
+            toasts.addToast(errorData?.message, {
+              autoDismiss: true,
+              appearance: 'error',
+            });
+            setProcessing(false);
+          }
+        };
+
+        loginWithDiscord();
+      }
+    }
+  }, [router.query, revalidate]);
 
   // Effect that is triggered whenever `useUser`'s user changes. If we get a new
   // valid user, we redirect the user to the home page as the login was successful.
@@ -161,6 +207,22 @@ const Login = () => {
           </Button>
         ))
       )),
+
+    ...(mediaServerLogin && settings.currentSettings.enableDiscordAuth
+      ? [
+          <Button
+            key="discord"
+            data-testid="discord-login-button"
+            className="flex-1 bg-transparent"
+            onClick={() => {
+              window.location.href = `https://discord.com/oauth2/authorize?response_type=code&client_id=${settings.currentSettings.discordClientId}&scope=identify%20email&redirect_uri=${window.location.origin}/login&state=discord&prompt=consent`;
+            }}
+          >
+            <DiscordLogo />
+            <span>Sign in with Discord</span>
+          </Button>,
+        ]
+      : []),
   ].filter((o): o is JSX.Element => !!o);
 
   return (

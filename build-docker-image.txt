@@ -1,0 +1,6 @@
+docker build `
+  --build-arg COMMIT_TAG="v2.5.2" `
+  --build-arg BUILD_DATE="$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')" `
+  --build-arg BUILD_VERSION="2.5.2" `
+  -t evantrow/jellyseerr `
+  .

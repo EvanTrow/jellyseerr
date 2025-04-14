@@ -25,6 +25,8 @@ export interface PublicSettingsResponse {
   jellyfinExternalHost?: string;
   jellyfinServerName?: string;
   jellyfinForgotPasswordUrl?: string;
+  enableDiscordAuth?: boolean;
+  discordClientId?: string;
   initialized: boolean;
   applicationTitle: string;
   applicationUrl: string;

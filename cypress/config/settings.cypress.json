@@ -50,7 +50,11 @@
     "externalHostname": "",
     "jellyfinForgotPasswordUrl": "",
     "libraries": [],
-    "serverId": ""
+    "serverId": "",
+    "enableDiscordAuth": false,
+    "discordClientId": "",
+    "discordClientSecret": "",
+    "discordRedirectUrl": "",
   },
   "tautulli": {},
   "radarr": [],
