@@ -74,6 +74,14 @@ const MediaSlider = ({
     );
   }
 
+  if (settings.currentSettings.hideBlacklisted) {
+    titles = titles.filter(
+      (i) =>
+        (i.mediaType === 'movie' || i.mediaType === 'tv') &&
+        i.mediaInfo?.status !== MediaStatus.BLACKLISTED
+    );
+  }
+
   useEffect(() => {
     if (
       titles.length < 24 &&
@@ -115,6 +123,7 @@ const MediaSlider = ({
           return (
             <TitleCard
               key={title.id}
+              nsfw={title.nsfw}
               id={title.id}
               isAddedToWatchlist={title.mediaInfo?.watchlists?.length ?? 0}
               image={title.posterPath}
@@ -131,6 +140,7 @@ const MediaSlider = ({
           return (
             <TitleCard
               key={title.id}
+              nsfw={title.nsfw}
               id={title.id}
               isAddedToWatchlist={title.mediaInfo?.watchlists?.length ?? 0}
               image={title.posterPath}

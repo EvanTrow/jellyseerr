@@ -1,5 +1,6 @@
 interface TmdbMediaResult {
   id: number;
+  nsfw: boolean;
   media_type: string;
   popularity: number;
   poster_path?: string;
@@ -139,6 +140,7 @@ export interface TmdbProductionCompany {
 
 export interface TmdbMovieDetails {
   id: number;
+  nsfw: boolean;
   imdb_id?: string;
   adult: boolean;
   backdrop_path?: string;
@@ -235,6 +237,7 @@ export interface TmdbTvSeasonResult {
 
 export interface TmdbTvDetails {
   id: number;
+  nsfw: boolean;
   backdrop_path?: string;
   content_ratings: TmdbTvRatingResult;
   created_by: {

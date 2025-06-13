@@ -595,6 +595,9 @@ components:
         id:
           type: number
           example: 1234
+        nsfw:
+          type: boolean
+          example: false
         mediaType:
           type: string
         popularity:
@@ -640,6 +643,9 @@ components:
         id:
           type: number
           example: 1234
+        nsfw:
+          type: boolean
+          example: false
         mediaType:
           type: string
         popularity:

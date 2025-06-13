@@ -1,4 +1,5 @@
 import ExternalAPI from '@server/api/externalapi';
+import { isBlockedByKeywords } from '@server/api/themoviedb/filterKeywords';
 import cacheManager from '@server/lib/cache';
 import { getSettings } from '@server/lib/settings';
 import { sortBy } from 'lodash';
@@ -12,6 +13,7 @@ import type {
   TmdbKeywordSearchResponse,
   TmdbLanguage,
   TmdbMovieDetails,
+  TmdbMovieResult,
   TmdbNetwork,
   TmdbPersonCombinedCredits,
   TmdbPersonDetails,
@@ -22,6 +24,7 @@ import type {
   TmdbSearchTvResponse,
   TmdbSeasonWithEpisodes,
   TmdbTvDetails,
+  TmdbTvResult,
   TmdbUpcomingMoviesResponse,
   TmdbWatchProviderDetails,
   TmdbWatchProviderRegion,
@@ -153,11 +156,36 @@ class TheMovieDb extends ExternalAPI {
     language = this.locale,
   }: SearchOptions): Promise<TmdbSearchMultiResponse> => {
     try {
-      const data = await this.get<TmdbSearchMultiResponse>('/search/multi', {
+      let data = await this.get<TmdbSearchMultiResponse>('/search/multi', {
         params: { query, page, include_adult: includeAdult, language },
       });
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => {
+          if (
+            result.media_type === 'person' ||
+            result.media_type === 'collection'
+          ) {
+            return result;
+          }
+          if (result.media_type === 'movie') {
+            const movie = result as TmdbMovieResult;
+            return {
+              ...result,
+              nsfw: isBlockedByKeywords(movie.title, movie.overview),
+            };
+          }
+          if (result.media_type === 'tv') {
+            const tv = result as TmdbTvResult;
+            return {
+              ...result,
+              nsfw: isBlockedByKeywords(tv.name, tv.overview),
+            };
+          }
+          return result;
+        }),
+      };
     } catch (e) {
       return {
         page: 1,
@@ -186,7 +214,13 @@ class TheMovieDb extends ExternalAPI {
         },
       });
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       return {
         page: 1,
@@ -215,7 +249,13 @@ class TheMovieDb extends ExternalAPI {
         },
       });
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.name, result.overview),
+        })),
+      };
     } catch (e) {
       return {
         page: 1,
@@ -367,7 +407,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch discover movies: ${e.message}`);
     }
@@ -393,7 +439,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch discover movies: ${e.message}`);
     }
@@ -419,7 +471,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch movies by keyword: ${e.message}`);
     }
@@ -445,7 +503,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.name, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(
         `[TMDB] Failed to fetch TV recommendations: ${e.message}`
@@ -470,7 +534,13 @@ class TheMovieDb extends ExternalAPI {
         },
       });
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.name, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch TV similar: ${e.message}`);
     }
@@ -552,7 +622,13 @@ class TheMovieDb extends ExternalAPI {
         },
       });
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch discover movies: ${e.message}`);
     }
@@ -636,7 +712,13 @@ class TheMovieDb extends ExternalAPI {
         },
       });
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.name, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch discover TV: ${e.message}`);
     }
@@ -662,7 +744,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch upcoming movies: ${e.message}`);
     }
@@ -689,7 +777,32 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => {
+          if (
+            result.media_type === 'person' ||
+            result.media_type === 'collection'
+          ) {
+            return result;
+          }
+          if (result.media_type === 'movie') {
+            const movie = result as TmdbMovieResult;
+            return {
+              ...result,
+              nsfw: isBlockedByKeywords(movie.title, movie.overview),
+            };
+          }
+          if (result.media_type === 'tv') {
+            const tv = result as TmdbTvResult;
+            return {
+              ...result,
+              nsfw: isBlockedByKeywords(tv.name, tv.overview),
+            };
+          }
+          return result;
+        }),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch all trending: ${e.message}`);
     }
@@ -712,7 +825,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.title, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch all trending: ${e.message}`);
     }
@@ -735,7 +854,13 @@ class TheMovieDb extends ExternalAPI {
         }
       );
 
-      return data;
+      return {
+        ...data,
+        results: data.results.map((result) => ({
+          ...result,
+          nsfw: isBlockedByKeywords(result.name, result.overview),
+        })),
+      };
     } catch (e) {
       throw new Error(`[TMDB] Failed to fetch all trending: ${e.message}`);
     }

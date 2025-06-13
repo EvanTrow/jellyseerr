@@ -39,6 +39,7 @@ export interface Video {
 
 export interface MovieDetails {
   id: number;
+  nsfw: boolean;
   imdbId?: string;
   adult: boolean;
   backdropPath?: string;
@@ -106,6 +107,7 @@ export const mapMovieDetails = (
   userWatchlist?: boolean
 ): MovieDetails => ({
   id: movie.id,
+  nsfw: movie.nsfw,
   adult: movie.adult,
   budget: movie.budget,
   genres: movie.genres,

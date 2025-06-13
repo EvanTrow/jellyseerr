@@ -135,6 +135,7 @@ export interface MainSettings {
   originalLanguage: string;
   blacklistedTags: string;
   blacklistedTagsLimit: number;
+  filteredKeywords: string;
   mediaServerType: number;
   partialRequestsEnabled: boolean;
   enableSpecialEpisodes: boolean;
@@ -379,6 +380,7 @@ class Settings {
         originalLanguage: '',
         blacklistedTags: '',
         blacklistedTagsLimit: 50,
+        filteredKeywords: '',
         mediaServerType: MediaServerType.NOT_CONFIGURED,
         partialRequestsEnabled: true,
         enableSpecialEpisodes: false,

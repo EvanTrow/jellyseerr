@@ -32,6 +32,7 @@ import { mutate } from 'swr';
 
 interface TitleCardProps {
   id: number;
+  nsfw?: boolean;
   image?: string;
   summary?: string;
   year?: string;
@@ -57,6 +58,7 @@ const messages = defineMessages('components.TitleCard', {
 
 const TitleCard = ({
   id,
+  nsfw,
   image,
   summary,
   year,
@@ -81,6 +83,9 @@ const TitleCard = ({
   );
   const [showBlacklistModal, setShowBlacklistModal] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Add state for blur toggle
+  const [showNsfw, setShowNsfw] = useState(false);
 
   // Just to get the year from the date
   if (year) {
@@ -327,7 +332,27 @@ const TitleCard = ({
         role="link"
         tabIndex={0}
       >
-        <div className="absolute inset-0 h-full w-full overflow-hidden">
+        {/* NSFW blur toggle button */}
+        {nsfw && !showNsfw && showDetail && (
+          <button
+            type="button"
+            className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 rounded bg-black bg-opacity-60 px-3 py-2 text-xs text-white transition hover:bg-opacity-80"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowNsfw((prev) => !prev);
+            }}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Show Content
+          </button>
+        )}
+        <div
+          className="absolute inset-0 h-full w-full overflow-hidden"
+          style={{
+            filter: nsfw && !showNsfw ? 'blur(12px)' : undefined,
+            pointerEvents: nsfw && !showNsfw ? 'none' : undefined,
+          }}
+        >
           <CachedImage
             type="tmdb"
             className="absolute inset-0 h-full w-full"
@@ -337,7 +362,11 @@ const TitleCard = ({
                 ? `https://image.tmdb.org/t/p/w300_and_h450_face${image}`
                 : `/images/jellyseerr_poster_not_found_logo_top.png`
             }
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
             fill
           />
           <div className="absolute left-0 right-0 flex items-center justify-between p-2">
@@ -440,7 +469,7 @@ const TitleCard = ({
 
           <Transition
             as={Fragment}
-            show={!image || showDetail || showRequestModal}
+            show={(!image || showDetail || showRequestModal) && showNsfw}
             enter="transition-opacity"
             enterFrom="opacity-0"
             enterTo="opacity-100"

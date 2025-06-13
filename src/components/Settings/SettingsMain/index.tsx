@@ -3,6 +3,7 @@ import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
 import SensitiveInput from '@app/components/Common/SensitiveInput';
+import FilteredKeywordSelector from '@app/components/FilteredKeywordSelector';
 import LanguageSelector from '@app/components/LanguageSelector';
 import RegionSelector from '@app/components/RegionSelector';
 import CopyButton from '@app/components/Settings/CopyButton';
@@ -41,6 +42,9 @@ const messages = defineMessages('components.Settings.SettingsMain', {
   blacklistedTags: 'Blacklist Content with Tags',
   blacklistedTagsTip:
     'Automatically add content with tags to the blacklist using the "Process Blacklisted Tags" job',
+  filteredKeywords: 'Blur Content with Keywords',
+  filteredKeywordsTip:
+    'Content matching a keyword will have the card blurred until you hover over it.',
   blacklistedTagsLimit: 'Limit Content Blacklisted per Tag',
   blacklistedTagsLimitTip:
     'The "Process Blacklisted Tags" job will blacklist this many pages into each sort. Larger numbers will create a more accurate blacklist, but use more space.',
@@ -169,6 +173,7 @@ const SettingsMain = () => {
             streamingRegion: data?.streamingRegion || 'US',
             blacklistedTags: data?.blacklistedTags,
             blacklistedTagsLimit: data?.blacklistedTagsLimit || 50,
+            filteredKeywords: data?.filteredKeywords,
             partialRequestsEnabled: data?.partialRequestsEnabled,
             enableSpecialEpisodes: data?.enableSpecialEpisodes,
             cacheImages: data?.cacheImages,
@@ -189,6 +194,7 @@ const SettingsMain = () => {
                 originalLanguage: values.originalLanguage,
                 blacklistedTags: values.blacklistedTags,
                 blacklistedTagsLimit: values.blacklistedTagsLimit,
+                filteredKeywords: values.filteredKeywords,
                 partialRequestsEnabled: values.partialRequestsEnabled,
                 enableSpecialEpisodes: values.enableSpecialEpisodes,
                 cacheImages: values.cacheImages,
@@ -441,6 +447,21 @@ const SettingsMain = () => {
                           {errors.blacklistedTagsLimit}
                         </div>
                       )}
+                  </div>
+                </div>
+                <div className="form-row">
+                  <label htmlFor="filteredKeywords" className="text-label">
+                    <span>{intl.formatMessage(messages.filteredKeywords)}</span>
+                    <span className="label-tip">
+                      {intl.formatMessage(messages.filteredKeywordsTip)}
+                    </span>
+                  </label>
+                  <div className="form-input-area">
+                    <div className="form-input-field relative z-10">
+                      <FilteredKeywordSelector
+                        defaultValue={values.filteredKeywords}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="form-row">

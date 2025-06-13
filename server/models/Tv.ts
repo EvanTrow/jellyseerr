@@ -63,6 +63,7 @@ interface SpokenLanguage {
 
 export interface TvDetails {
   id: number;
+  nsfw: boolean;
   backdropPath?: string;
   posterPath?: string;
   contentRatings: TmdbTvRatingResult;
@@ -175,6 +176,7 @@ export const mapTvDetails = (
   relatedVideos: mapVideos(show.videos),
   homepage: show.homepage,
   id: show.id,
+  nsfw: show.nsfw,
   inProduction: show.in_production,
   languages: show.languages,
   lastAirDate: show.last_air_date,

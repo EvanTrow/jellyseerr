@@ -82,6 +82,7 @@ const ListView = ({
                   <TitleCard
                     key={title.id}
                     id={title.id}
+                    nsfw={title.nsfw}
                     isAddedToWatchlist={
                       title.mediaInfo?.watchlists?.length ?? 0
                     }
@@ -104,6 +105,7 @@ const ListView = ({
                   <TitleCard
                     key={title.id}
                     id={title.id}
+                    nsfw={title.nsfw}
                     isAddedToWatchlist={
                       title.mediaInfo?.watchlists?.length ?? 0
                     }

@@ -14,6 +14,7 @@ export type MediaType = 'tv' | 'movie' | 'person' | 'collection';
 
 interface SearchResult {
   id: number;
+  nsfw: boolean;
   mediaType: MediaType;
   popularity: number;
   posterPath?: string;
@@ -73,6 +74,7 @@ export const mapMovieResult = (
   media?: Media
 ): MovieResult => ({
   id: movieResult.id,
+  nsfw: movieResult.nsfw,
   mediaType: 'movie',
   adult: movieResult.adult,
   genreIds: movieResult.genre_ids,
@@ -95,6 +97,7 @@ export const mapTvResult = (
   media?: Media
 ): TvResult => ({
   id: tvResult.id,
+  nsfw: tvResult.nsfw,
   firstAirDate: tvResult.first_air_date,
   genreIds: tvResult.genre_ids,
   // Some results from tmdb dont return the mediaType so we force it here!
@@ -182,6 +185,7 @@ export const mapMovieDetailsToResult = (
   movieDetails: TmdbMovieDetails
 ): TmdbMovieResult => ({
   id: movieDetails.id,
+  nsfw: movieDetails.nsfw,
   media_type: 'movie',
   adult: movieDetails.adult,
   genre_ids: movieDetails.genres.map((genre) => genre.id),
@@ -202,6 +206,7 @@ export const mapTvDetailsToResult = (
   tvDetails: TmdbTvDetails
 ): TmdbTvResult => ({
   id: tvDetails.id,
+  nsfw: tvDetails.nsfw,
   media_type: 'tv',
   first_air_date: tvDetails.first_air_date,
   genre_ids: tvDetails.genres.map((genre) => genre.id),

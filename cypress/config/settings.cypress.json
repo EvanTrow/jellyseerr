@@ -21,6 +21,7 @@
     "originalLanguage": "",
     "blacklistedTags": "",
     "blacklistedTagsLimit": 50,
+    "filteredKeywords": "",
     "trustProxy": false,
     "mediaServerType": 1,
     "partialRequestsEnabled": true,

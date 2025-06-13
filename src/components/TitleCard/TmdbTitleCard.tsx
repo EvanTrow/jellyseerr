@@ -61,6 +61,7 @@ const TmdbTitleCard = ({
   return isMovie(title) ? (
     <TitleCard
       key={title.id}
+      nsfw={title.nsfw}
       id={title.id}
       isAddedToWatchlist={
         title.mediaInfo?.watchlists?.length || isAddedToWatchlist
@@ -78,6 +79,7 @@ const TmdbTitleCard = ({
   ) : (
     <TitleCard
       key={title.id}
+      nsfw={title.nsfw}
       id={title.id}
       isAddedToWatchlist={
         title.mediaInfo?.watchlists?.length || isAddedToWatchlist
